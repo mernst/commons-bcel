@@ -63,8 +63,8 @@ public abstract /*@UsesObjectEquals*/ class BranchInstruction extends Instructio
 
 
     /**
-     * Empty constructor needed for the Class.newInstance() statement in
-     * Instruction.readInstruction(). Not to be used otherwise.
+     * Empty constructor needed for Instruction.readInstruction.
+     * Not to be used otherwise.
      */
     @SuppressWarnings("initialization.fields.uninitialized") // constructor should be removed
     BranchInstruction() {
@@ -214,7 +214,7 @@ public abstract /*@UsesObjectEquals*/ class BranchInstruction extends Instructio
      * Set branch target
      * @param target branch target
      */
-    @EnsuresNonNull("this.target")
+    /*@EnsuresNonNull("this.target")*/
     public void setTarget( /*>>>@UnknownInitialization(BranchInstruction.class) BranchInstruction this,*/ final InstructionHandle target ) {
         notifyTarget(this.target, target, this);
         this.target = target;
