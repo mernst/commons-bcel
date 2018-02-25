@@ -27,12 +27,8 @@ import org.apache.bcel.classfile.Utility;
 
 /*>>>
 import org.checkerframework.checker.interning.qual.*;
-import org.checkerframework.checker.interning.qual.Interned;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.checker.signature.qual.BinaryName;
-import org.checkerframework.checker.signature.qual.BinaryNameForNonArray;
-import org.checkerframework.checker.signature.qual.FieldDescriptor;
+import org.checkerframework.checker.nullness.qual.*;
+import org.checkerframework.checker.signature.qual.*;
 import org.checkerframework.framework.qual.AnnotatedFor;
 */
 
@@ -66,7 +62,7 @@ public abstract class Type {
     //  * ReturnaddressType: the string is "<return address>"
     //  * DOUBLE_Upper: the string is "Double_Upper"
     //  * LONG_Upper: the string is "Long_Upper"
-    protected @FieldDescriptor String signature; // signature for the type TODO should be private
+    protected /*@FieldDescriptor*/ String signature; // signature for the type TODO should be private
     /** Predefined constants
      */
     public static final /*@InternedDistinct*/ BasicType VOID = new BasicType(Const.T_VOID);
@@ -91,7 +87,7 @@ public abstract class Type {
     };
 
 
-    protected Type(final byte t, final @FieldDescriptor String s) {
+    protected Type(final byte t, final /*@FieldDescriptor*/ String s) {
         type = t;
         signature = s;
     }
@@ -122,7 +118,7 @@ public abstract class Type {
     /**
      * @return signature for given type.
      */
-    public @FieldDescriptor String getSignature() {
+    public /*@FieldDescriptor*/ String getSignature() {
         return signature;
     }
 
@@ -170,7 +166,7 @@ public abstract class Type {
     @Override
     // TODO: result must be one of fully-qualified name, binary name, internal form, Class.getSimpleName
     // TODO: looks like a bug, because signatureToString is called
-    public String toString() {
+    public /*@BinaryName*/ String toString() {
         return ((this.equals(Type.NULL) || (type >= Const.T_UNKNOWN))) ? signature : Utility
                 .signatureToString(signature, false);
     }
@@ -224,9 +220,9 @@ public abstract class Type {
      */
     // @since 6.0 no longer final
     // TODO: getType(Class) calls "getType(cl.getName())" for arrays, which passes a
-    // @ClassGetName such as "[Ljava.lang.String;" rather than a
-    // @FieldDescriptor as documented in this method's Javadoc.
-    public static /*@NonNull*/ Type getType( final @FieldDescriptor String signature ) throws StringIndexOutOfBoundsException {
+    // /*@ClassGetName*/ such as "[Ljava.lang.String;" rather than a
+    // /*@FieldDescriptor*/ as documented in this method's Javadoc.
+    public static /*@NonNull*/ Type getType( final /*@ClassGetName*/ String signature ) throws StringIndexOutOfBoundsException {
         final byte type = Utility.typeOfSignature(signature);
         if (type <= Const.T_VOID) {
             //corrected concurrent private static field acess
@@ -252,7 +248,7 @@ public abstract class Type {
             final String parsedSignature = Utility.signatureToString(signature, false);
             wrap(consumed_chars, parsedSignature.length() + 2); // "Lblabla;" `L' and `;' are removed
             @SuppressWarnings("signature") // string manipulation; known to be reference type
-            @BinaryNameForNonArray String className = parsedSignature.replace('/', '.');
+            /*@BinaryNameForNonArray*/ String className = parsedSignature.replace('/', '.');
             return ObjectType.getInstance(className);
         }
     }
@@ -344,7 +340,7 @@ public abstract class Type {
                 throw new IllegalStateException("Ooops, what primitive type is " + cl);
             }
         } else { // "Real" class
-            // If a non-array reference, then @ClassGetName = @FullyQualifiedName, so this is OK.
+            // If a non-array reference, then /*@ClassGetName*/ = @FullyQualifiedName, so this is OK.
             // TODO: Except not for inner classes, where they are different ("." vs "$" in name).
             return ObjectType.getInstance(cl.getName());
         }
@@ -440,7 +436,7 @@ public abstract class Type {
      * The signature has a complicated dependency on other parameter
      * so it's tricky to do it in a call to the super ctor.
      */
-    void setSignature(final @FieldDescriptor String signature) {
+    void setSignature(final /*@FieldDescriptor*/ String signature) {
         this.signature = signature;
     }
 }
