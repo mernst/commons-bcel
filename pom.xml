@@ -273,6 +273,7 @@
             </path>
           </annotationProcessorPaths>
           <annotationProcessors>
+<!-- Temporarily comment out while focusing on Signature Checker. -->
 <!--
             <annotationProcessor>org.checkerframework.checker.interning.InterningChecker</annotationProcessor>
             <annotationProcessor>org.checkerframework.checker.nullness.NullnessChecker</annotationProcessor>
