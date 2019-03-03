@@ -18,6 +18,7 @@
 package org.apache.bcel.verifier.structurals;
 
 
+import org.checkerframework.checker.index.qual.NonNegative;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -46,9 +47,7 @@ import org.apache.bcel.verifier.exc.AssertionViolatedException;
 import org.apache.bcel.verifier.exc.StructuralCodeConstraintException;
 import org.apache.bcel.verifier.exc.VerifierConstraintViolatedException;
 
-/*>>>
 import org.checkerframework.dataflow.qual.Pure;
-*/
 
 /**
  * This PassVerifier verifies a method of class file according to pass 3,
@@ -99,8 +98,8 @@ public final class Pass3bVerifier extends PassVerifier{
         public ArrayList<InstructionContext> getEC(final int i) {
             return ecs.get(i);
         }
-        /*@Pure*/
-        public int size() {
+        @Pure
+        public @NonNegative int size() {
             return ics.size();
         }
     } // end Inner Class InstructionContextQueue

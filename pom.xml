@@ -33,7 +33,7 @@
   <groupId>org.apache.bcel</groupId>
   <artifactId>bcel</artifactId>
   <packaging>jar</packaging>
-  <version>6.2</version>
+  <version>6.2.0.2</version>
   <name>Apache Commons BCEL</name>
   <description>Apache Commons Bytecode Engineering Library</description>
 
@@ -43,12 +43,12 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
     <commons.componentid>bcel</commons.componentid>
     <commons.module.name>org.apache.bcel</commons.module.name>
-    <commons.release.version>6.2</commons.release.version>
-    <commons.release.desc>(Java 7+)</commons.release.desc>
+    <commons.release.version>6.2.0.2</commons.release.version>
+    <commons.release.desc>(Java 8+)</commons.release.desc>
     <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/commons-bcel</commons.scmPubUrl>
     <!-- Configuration properties for the OSGi maven-bundle-plugin -->
     <commons.osgi.symbolicName>org.apache.${commons.componentid}</commons.osgi.symbolicName>
@@ -65,7 +65,7 @@
     <!-- These properties will be set by the Maven Dependency plugin -->
     <annotatedJdk>${org.checkerframework:jdk8:jar}</annotatedJdk>
     <typeAnnotationsJavac>${org.checkerframework:compiler:jar}</typeAnnotationsJavac>
-    <checkerframework.version>2.3.2</checkerframework.version>
+    <checkerFrameworkVersion>2.5.5</checkerFrameworkVersion>
   </properties>
 
   <!-- Cannot be added to Commons Parent, see https://issues.apache.org/jira/browse/COMMONSSITE-26 -->
@@ -258,13 +258,20 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.6.1</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
           <fork>true</fork>
           <compilerArguments>
             <Xmaxerrs>10000</Xmaxerrs>
             <Xmaxwarns>10000</Xmaxwarns>
           </compilerArguments>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.checkerframework</groupId>
+              <artifactId>checker</artifactId>
+              <version>2.5.5</version>
+            </path>
+          </annotationProcessorPaths>
           <annotationProcessors>
 <!--
             <annotationProcessor>org.checkerframework.checker.interning.InterningChecker</annotationProcessor>
@@ -275,12 +282,14 @@
 -->
           </annotationProcessors>
           <compilerArgs>
+            <arg>-AprintErrorStack</arg>
+            <!-- location of the annotated JDK, which comes from a Maven dependency -->
             <arg>-Xbootclasspath/p:${annotatedJdk}</arg>
-            <arg>-J-Xbootclasspath/p:${typeAnnotationsJavac}</arg>
             <!-- -AuseDefaultsForUncheckedCode=source causes compilation errors in
                  any library that uses an unannotated part of BCEL. -->
             <!-- <arg>-AuseDefaultsForUncheckedCode=source</arg> -->
-            <!-- <arg>-Awarns</arg> -->
+            <!-- Make type-checking warnings into errors. -->
+            <arg>-Awarns</arg>
           </compilerArgs>
           <testExcludes>
             <testExclude>**/*Benchmark*</testExclude>
@@ -490,27 +499,28 @@
     <dependency>
       <groupId>org.checkerframework</groupId>
       <artifactId>checker-qual</artifactId>
-      <version>${checkerframework.version}</version>
+      <version>${checkerFrameworkVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.checkerframework</groupId>
       <artifactId>checker</artifactId>
-      <version>${checkerframework.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.checkerframework</groupId>
-      <artifactId>compiler</artifactId>
-      <version>2.3.2</version>
+      <version>${checkerFrameworkVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.checkerframework</groupId>
       <artifactId>jdk8</artifactId>
-      <version>${checkerframework.version}</version>
+      <version>${checkerFrameworkVersion}</version>
     </dependency>
   </dependencies>
 
   <profiles>
-    <!-- Profile to use the version of Checker Framework installed locally-->
+    <!-- THIS DOES NOT WORK!
+         The culprit is (e.g.) the "2.5.5" in <annotationProcessorPaths>; I don't know how to
+         make that use ${CHECKERFRAMEWORK}/checker/dist/checker.jar .
+
+         Profile to use the version of Checker Framework installed locally.
+         Run mvn with `-Pcheckerframework-local`.
+    -->
     <profile>
       <id>checkerframework-local</id>
       <dependencies>
